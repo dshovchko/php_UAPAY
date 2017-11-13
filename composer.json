@@ -1,0 +1,36 @@
+{
+"minimum-stability": "dev",
+    "name": "dshovchko/php_uapay",
+    "description": "Library for UAPAY service integration",
+    "keywords": ["uapay", "uapay.ua"],
+    "homepage": "https://github.com/dshovchko/php_UAPAY",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitry Shovchko",
+            "email": "d.shovchko@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/dshovchko/php_UAPAY/issues",
+        "source": "https://github.com/dshovchko/php_UAPAY"
+    },
+    "require": {
+        "php": ">=5.5.27",
+        "dshovchko/debulog": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8",
+        "satooshi/php-coveralls": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "UAPAY\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "UAPAYTest\\": "test/"
+        }
+    }
+}
