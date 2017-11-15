@@ -6,7 +6,7 @@ class MockPHPStream
 {
     protected $index = 0;
     protected $length = null;
-    protected $data = 'hello world';
+    protected $data = '';
 
     public $context;
 
@@ -16,17 +16,15 @@ class MockPHPStream
         {
             $this->data = file_get_contents($this->buffer_filename());
         }
-        else
-        {
-            $this->data = '';
-        }
         $this->index = 0;
         $this->length = strlen($this->data);
+
+        register_shutdown_function(array($this, 'unlink'));
     }
 
     protected function buffer_filename()
     {
-        return sys_get_temp_dir().'\php_input.txt';
+        return sys_get_temp_dir().'/php_input.txt';
     }
 
     function stream_open($path, $mode, $options, &$opened_path)
