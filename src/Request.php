@@ -4,16 +4,26 @@ namespace UAPAY;
 
 use UAPAY\Log as Log;
 use UAPAY\Exception;
+use Firebase\JWT\JWT;
 
 abstract class Request
 {
     /**
-     *      @var object
+     *      @var Object
      */
     protected $client;
 
     /**
-     *      @var array
+     *      @var Array
+     */
+    protected $jwt=array(
+        'using'         => false,
+        'UAPAY_pubkey'  => '',
+        'our_privkey'   => '',
+    );
+
+    /**
+     *      @var Array
      */
     protected $data;
 
@@ -25,9 +35,34 @@ abstract class Request
     public function __construct($options)
     {
         // api_url
-        if (!isset($options['api_uri']))
+        if ( ! isset($options['api_uri']))
         {
             throw new Exception\Data('parameter api_uri is not specified');
+        }
+
+        if (isset($options['jwt']))
+        {
+            // using
+            if ( ! isset($options['jwt']['using']))
+            {
+                throw new Exception\Data('parameter jwt/using is not specified');
+            }
+            if ( ! is_bool($options['jwt']['using']))
+            {
+                throw new Exception\Data('parameter jwt/using is incorrect');
+            }
+            // using
+            if ( ! isset($options['jwt']['UAPAY_pubkey']))
+            {
+                throw new Exception\Data('parameter jwt/UAPAY_pubkey is not specified');
+            }
+            // using
+            if ( ! isset($options['jwt']['our_privkey']))
+            {
+                throw new Exception\Data('parameter jwt/our_privkey is not specified');
+            }
+
+            $this->jwt = $options['jwt'];
         }
 
         // http client
@@ -97,6 +132,16 @@ abstract class Request
     }
 
     /**
+     *      Returns iat param
+     *
+     *      @return array
+     */
+    public function get_param_iat()
+    {
+        return time();
+    }
+
+    /**
      *      Returns the JSON representation of class
      *
      *      @return string
@@ -109,6 +154,44 @@ abstract class Request
         if (isset($this->data))
         {
             $ar['data'] = $this->data;
+        }
+        if ($this->jwt['using'] === true)
+        {
+            $payload = $ar;
+            $payload['iat'] = $this->get_param_iat();
+
+            // check private key file
+            if ( ! file_exists($this->jwt['our_privkey']))
+            {
+                throw new Exception\Runtime('The file with the private key was not find!');
+            }
+
+            // load private key file
+            $fpkey = fopen($this->jwt['our_privkey'], "rb");
+            if ($fpkey === FALSE)
+            {
+                throw new Exception\Runtime('The file with the private key was not open!');
+            }
+            $privateKey = fread($fpkey, 8192);
+            if ($privateKey === FALSE)
+            {
+                throw new Exception\Runtime('The file with the private key was not read!');
+            }
+            fclose($fpkey);
+
+            try
+            {
+                $token = JWT::encode($payload, $privateKey, 'RS512');
+            }
+            catch (\Exception $e)
+            {
+                Log::instance()->error($e->getMessage().PHP_EOL.$e->getTraceAsString());
+                throw new Exception\JSON('unable to create JWT token', $e);
+            }
+
+            if (isset($ar['data'])) unset($ar['data']);
+
+            $ar['token'] = $token;
         }
         $json = json_encode($ar, JSON_UNESCAPED_SLASHES);
 
