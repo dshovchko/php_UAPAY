@@ -14,7 +14,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
-        \UAPAY\Log::set(new \Debulog\StubLogger(''));
+        \UAPAY\Log::set(new \Debulog\MockLogger(''));
     }
 
     public function invokeMethod(&$object, $methodName, array $parameters = array())
@@ -26,10 +26,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     public function invokeProperty(&$object, $propertyName) {
-		$reflection = new \ReflectionClass(get_class($object));
-		$property = $reflection->getProperty($propertyName);
-		$property->setAccessible(true);
+        $reflection = new \ReflectionClass(get_class($object));
+        $property = $reflection->getProperty($propertyName);
+        $property->setAccessible(true);
 
-		return $property;
-	}
+        return $property;
+    }
 }
