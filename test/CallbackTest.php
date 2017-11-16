@@ -243,7 +243,7 @@ class CallbackTest extends TestCase
         file_put_contents('php://input', $this->JSON_ok());
         $c = new Callback();
 
-        \UAPAY\Log::set(new MockLogger());
+        \UAPAY\Log::set(new \Debulog\MockLogger());
         file_put_contents('php://input', 'some raw text');
         $this->assertEquals(
             'some raw text',

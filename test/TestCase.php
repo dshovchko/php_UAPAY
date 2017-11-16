@@ -14,7 +14,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
-        \UAPAY\Log::set(new StubLogger(''));
+        \UAPAY\Log::set(new \Debulog\StubLogger(''));
     }
 
     public function invokeMethod(&$object, $methodName, array $parameters = array())
