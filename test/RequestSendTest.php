@@ -34,13 +34,6 @@ class RequestWithMockHTTP extends \UAPAY\Request
         ]);
     }
 
-    public function mock_200_empty()
-    {
-        return new MockHandler([
-            new Response(200, ['Content-Length' => 0]),
-        ]);
-    }
-
     public function mock_404()
     {
         return new MockHandler([
@@ -93,19 +86,6 @@ class RequestSendTest extends TestCase
                 'got response:'.PHP_EOL.'{"status":1,"data":{"id":"a02822e2-6419-492b-857d-9aac9f1b615b"}}'),
             \UAPAY\Log::instance()->show_debug_log()
         );
-    }
-
-    /**
-     * @expectedException UAPAY\Exception\JSON
-     * @expectedExceptionMessage invalid json response!
-     */
-    public function test_send_200_empty()
-    {
-
-        $r = new RequestWithMockHTTP();
-        $r->set_handler($r->mock_200_empty());
-
-        $ret = $r->send();
     }
 
     /**
