@@ -8,18 +8,18 @@ use UAPAY\Exception;
 class Response extends \UAPAY\Response
 {
     /**
-     *      @var String
+     *      @var string
      */
     protected $id;
 
     /**
-     *      Constructor
+     *      Handle decoded JSON
      *
-     *      @param array $json_string array of options
+     *      @throws Exception\JSON
      */
-    public function __construct($json_string)
+    public function json_handle()
     {
-        parent::__construct($json_string);
+        parent::json_handle();
 
         if (!isset($this->json['data']['id']))
         {

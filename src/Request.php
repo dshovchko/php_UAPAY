@@ -9,12 +9,12 @@ use Firebase\JWT\JWT;
 abstract class Request
 {
     /**
-     *      @var Object
+     *      @var object
      */
     protected $client;
 
     /**
-     *      @var Array
+     *      @var array
      */
     protected $jwt=array(
         'using'         => false,
@@ -23,7 +23,7 @@ abstract class Request
     );
 
     /**
-     *      @var Array
+     *      @var array
      */
     protected $data;
 
@@ -31,6 +31,7 @@ abstract class Request
      *      Constructor
      *
      *      @param array $options array of options
+     *      @throws Exception\Data
      */
     public function __construct($options)
     {
@@ -159,39 +160,9 @@ abstract class Request
         {
             $payload = $ar;
             $payload['iat'] = $this->get_param_iat();
-
-            // check private key file
-            if ( ! file_exists($this->jwt['our_privkey']))
-            {
-                throw new Exception\Runtime('The file with the private key was not find!');
-            }
-
-            // load private key file
-            $fpkey = fopen($this->jwt['our_privkey'], "rb");
-            if ($fpkey === FALSE)
-            {
-                throw new Exception\Runtime('The file with the private key was not open!');
-            }
-            $privateKey = fread($fpkey, 8192);
-            if ($privateKey === FALSE)
-            {
-                throw new Exception\Runtime('The file with the private key was not read!');
-            }
-            fclose($fpkey);
-
-            try
-            {
-                $token = JWT::encode($payload, $privateKey, 'RS512');
-            }
-            catch (\Exception $e)
-            {
-                Log::instance()->error($e->getMessage().PHP_EOL.$e->getTraceAsString());
-                throw new Exception\JSON('unable to create JWT token', $e);
-            }
+            $ar['token'] = $this->token_encode($payload);
 
             if (isset($ar['data'])) unset($ar['data']);
-
-            $ar['token'] = $token;
         }
         $json = json_encode($ar, JSON_UNESCAPED_SLASHES);
 
@@ -201,6 +172,66 @@ abstract class Request
         return $json;
     }
 
+    /**
+     *      Get private key for encode payload
+     *
+     *      @throws Exception\Runtime
+     *      @return string
+     */
+    protected function own_private_key()
+    {
+        // check private key file
+        if ( ! file_exists($this->jwt['our_privkey']))
+        {
+            throw new Exception\Runtime('The file with the private key was not find!');
+        }
+
+        // load private key file
+        $fpkey = fopen($this->jwt['our_privkey'], "rb");
+        if ($fpkey === FALSE)
+        {
+            throw new Exception\Runtime('The file with the private key was not open!');
+        }
+        $private_key = fread($fpkey, 8192);
+        if ($private_key === FALSE)
+        {
+            throw new Exception\Runtime('The file with the private key was not read!');
+        }
+        fclose($fpkey);
+
+        return $private_key;
+    }
+
+    /**
+     *      Encode payload and return token
+     *
+     *      @param array $payload
+     *      @throws Exception\JSON
+     *      @return string Token
+     */
+    protected function token_encode($payload)
+    {
+        Log::instance()->debug('encode payload:');
+        Log::instance()->debug(print_r($payload, true));
+        try
+        {
+            $token = JWT::encode($payload, $this->own_private_key(), 'RS512');
+        }
+        catch (\Exception $e)
+        {
+            Log::instance()->error($e->getMessage().PHP_EOL.$e->getTraceAsString());
+            throw new Exception\JSON('unable to create JWT token', $e);
+        }
+
+        return $token;
+    }
+
+    /**
+     *      Send request to UAPAY
+     *
+     *      @throws Exception\Transfer
+     *      @return object Response
+     */
     public function send()
     {
         Log::instance()->debug('send request to '.$this->api_path);
@@ -215,7 +246,7 @@ abstract class Request
             ]);
             $body = $httpresponse->getBody()->getContents();
             Log::instance()->debug('got response:'.PHP_EOL.$body);
-            $response = new $this->response_class($body);
+            $response = new $this->response_class($body, $this->jwt);
         }
         catch (\GuzzleHttp\Exception\TransferException $e)
         {
