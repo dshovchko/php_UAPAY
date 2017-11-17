@@ -22,7 +22,7 @@ class Response extends \UAPAY\Response
      *
      *      @throws Exception\JSON
      */
-    public function json_handle()
+    protected function json_handle()
     {
         parent::json_handle();
 
