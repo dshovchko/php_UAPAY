@@ -30,7 +30,7 @@ abstract class Response
     /**
      *      Constructor
      *
-     *      @param array $json_string JSON string
+     *      @param string $json_string JSON string
      *      @param array $jwt_options array of options
      */
     public function __construct($json_string, $jwt_options=null)
