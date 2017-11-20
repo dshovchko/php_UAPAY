@@ -9,7 +9,7 @@ use Firebase\JWT\JWT;
 abstract class Response
 {
     /**
-     *      @var string
+     *      @var array
      */
     protected $json;
 
@@ -40,7 +40,7 @@ abstract class Response
             $this->jwt = array_merge($this->jwt, $jwt_options);
         }
 
-        $this->json_decode($json_string);
+        $this->json = $this->json_decode($json_string);
         $this->json_handle();
     }
 
@@ -48,16 +48,19 @@ abstract class Response
      *      Decode JSON
      *
      *      @param string $json_string
+     *      @return array
      *      @throws Exception\Runtime
      */
     protected function json_decode($json_string)
     {
-        $this->json = json_decode($json_string, true);
+        $decoded = json_decode($json_string, true);
 
         if (json_last_error() != 0)
         {
             throw new Exception\Runtime('decoding error of the json response!');
         }
+
+        return $decoded;
     }
 
     /**
@@ -98,6 +101,17 @@ abstract class Response
     }
 
     /**
+     *      Get file contents
+     *
+     *      @param string $fname
+     *      @return string
+     */
+    protected function file_get_contents($fname)
+    {
+        return file_get_contents($fname);
+    }
+
+    /**
      *      Get UAPAY public key
      *
      *      @throws Exception\Runtime
@@ -112,17 +126,11 @@ abstract class Response
         }
 
         // load public key file
-        $fpkey = fopen($this->jwt['UAPAY_pubkey'], "rb");
-        if ($fpkey === FALSE)
-        {
-            throw new Exception\Runtime('The file with the public key was not open!');
-        }
-        $public_key = fread($fpkey, 8192);
+        $public_key = $this->file_get_contents($this->jwt['UAPAY_pubkey']);
         if ($public_key === FALSE)
         {
             throw new Exception\Runtime('The file with the public key was not read!');
         }
-        fclose($fpkey);
 
         return $public_key;
     }
