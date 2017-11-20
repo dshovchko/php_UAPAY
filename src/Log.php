@@ -16,14 +16,14 @@ use Debulog;
 class Log {
 
     /**
-     *      @var Log
+     *      @var Debulog\LoggerInterface
      */
     protected static $_instance;
 
     /**
      *      gets the instance
      *
-     *      @return Log
+     *      @return Debulog\LoggerInterface
      */
     public static function instance()
     {
