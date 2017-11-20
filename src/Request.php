@@ -239,7 +239,7 @@ abstract class Request
      */
     public function send()
     {
-        Log::instance()->debug('send request to '.$this->api_path);
+        Log::instance()->add('send request to '.$this->api_path);
         try
         {
             $httpresponse = $this->client->request('POST', $this->api_path, [

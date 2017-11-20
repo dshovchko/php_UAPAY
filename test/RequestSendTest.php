@@ -75,12 +75,11 @@ class RequestSendTest extends TestCase
             $ret->id()
         );
         $this->assertEquals(
-            array(),
+            array('send request to /api/path/'),
             \UAPAY\Log::instance()->show_log()
         );
         $this->assertEquals(
             array(
-                'send request to /api/path/',
                 'build JSON:',
                 '{"params":[]}',
                 'got response:'.PHP_EOL.'{"status":1,"data":{"id":"a02822e2-6419-492b-857d-9aac9f1b615b"}}'),
