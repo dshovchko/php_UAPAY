@@ -173,6 +173,17 @@ abstract class Request
     }
 
     /**
+     *      Get file contents
+     *
+     *      @param string $fname
+     *      @return string
+     */
+    protected function file_get_contents($fname)
+    {
+        return file_get_contents($fname);
+    }
+
+    /**
      *      Get private key for encode payload
      *
      *      @throws Exception\Runtime
@@ -187,17 +198,11 @@ abstract class Request
         }
 
         // load private key file
-        $fpkey = fopen($this->jwt['our_privkey'], "rb");
-        if ($fpkey === FALSE)
-        {
-            throw new Exception\Runtime('The file with the private key was not open!');
-        }
-        $private_key = fread($fpkey, 8192);
+        $private_key = $this->file_get_contents($this->jwt['our_privkey']);
         if ($private_key === FALSE)
         {
             throw new Exception\Runtime('The file with the private key was not read!');
         }
-        fclose($fpkey);
 
         return $private_key;
     }

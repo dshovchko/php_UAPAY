@@ -11,6 +11,13 @@ class RequestWithConstantIAT extends \UAPAY\Request
         return 1510326777;
     }
 }
+class RequestWithFalseGetContents extends \UAPAY\Request
+{
+    public function file_get_contents($fname)
+    {
+        return false;
+    }
+}
 
 class RequestTest extends TestCase
 {
@@ -297,8 +304,10 @@ class RequestTest extends TestCase
             array(array('api_uri'=>'localhost'))
         );
 
+        $stub->data(array('test' => 'value'));
+
         $this->assertEquals(
-            '{"params":[]}',
+            '{"params":[],"data":{"test":"value"}}',
             $this->invokeMethod($stub, 'get_json', array(null))
         );
     }
@@ -317,9 +326,31 @@ class RequestTest extends TestCase
                     )))
         );
 
+        $stub->data(array('test' => 'value'));
+
         $this->assertEquals(
-            '{"params":[],"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJwYXJhbXMiOltdLCJpYXQiOjE1MTAzMjY3Nzd9.FNcI7F4kmy2oktfIWGo6nMd2y6dZpTnl-xvbXzFTSAKBp6Z9G1UKvrBPPNxXYhUxOHsfY3QNzwowPQUKDAvXNM0HBE1JGj0EasAJsldXjxQO-4yPHZ5amCe2youwAqHKCGQqXt3r1QB1MG9N5h3pNP_k25j8BLFxhSxsDJfkRtVwEdhmQuHnO0S5p0SIDXPTdBnvOCKj5yOgY3WckjW8O7qMi2XPW49GtYWbM7phCxrEuyPS_-YKSIciFhoQswKZ3-sD4nPFBdmiS9j-17FrfshTustmGTvGcnYHWHnZH2I9sERnTI5t8p_Uao9uC8h3bxUYbfQDcus-H6ne1_WLJWFZkk3msnKeSVdVh2Mo2tikLUgg-hr1KmDHU7lo0kDuAku8IWK0Keht6bygCcmqEnK1u3NZiyBQKUVIUtiKoSyS7w_3fv3VWXt682EKu8x5rMW67zAcjrXe9ZUevL2ksOkl2TmgVMZaVhuIubJZLUbb3zuex88EgYCxo7PwtDbMEdfhMUT4m_3iL20uGwAZWnGfnP-ORwXfaPLdYgoeXBff3tamK8YSLGaMYqX60a2lK5LX6gBjY2S28c9L9cHoQZb2jPEVuD0Mb4bRw-ZS4aAuCoHjXrh0_N0pZN9Nx9HCks95EePMTh7EJ9wC7VSE0lpKQ2QfpwlDTecJZ_RQVI4"}',
+            '{"params":[],"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJwYXJhbXMiOltdLCJkYXRhIjp7InRlc3QiOiJ2YWx1ZSJ9LCJpYXQiOjE1MTAzMjY3Nzd9.fF8wEqCNmI7c5DZQ1hUkilBU5Ddd4gFVXyap6ZAMnYU7fSMWlimTYTQdFFOHJq6VXFrO5XoFGUjrOPsMs5zeDMSIZtSsPdiwFUP3JEtivTFPIJEWpQ0CcnUrehvwsHRpcd3qYWpXsfLXSdo9Oi0DYw04q157PDbEENuLaUTMHH_HbH_BD-OyLlmnSZeDyoJkYDVqepH7hmuEaLBqnpw3FUGUyH1hp88Onx2BMwNjXQrzOzHaj713S3pXiSPAyaMDyRanUYR_ugK0rtsCMCzIb1naCNDtMWVXXCRY1LSjKQ4bx7c6Z3mfa_z7v-559Zq9ePV5YtfcCzJewyPGAEMIRItV5fw2Iu2HK1YepudXr2tl0PjqrQOGvFQyzzgxr0OHd-4GfJk9Ddpad2m7WbFuhTx4vhKhPCJ7Mi1LGtCjvYDnlK_DiAg6FRU7ysNDofqdxGrJRk2IKSYc4fTo8PMdrYxvYwt6FWOXHTziuOpvQU9PkREy_x7IoVyE5lnmBhFinDdaQ9hrgEiqQhDCrVE98aYSgiRePcJVl81wMvulFHf5xN3BSOuEcZ_XvxU8-mCy2SuS0EQP5wAfV4lPlQy7UDIGtP3JQ7-bByfYJAVApsH7nksO6h93YRSmvtvjHGpnxOEulJ33fAJAQ6gAmJxAmdTmlJ5T3GXwH6bEuKtXRsY"}',
             $this->invokeMethod($stub, 'get_json', array(null))
+        );
+    }
+
+    public function test_own_private_key()
+    {
+        $stub = $this->getMockForAbstractClass(
+            'UAPAYTest\RequestWithConstantIAT',
+            array(
+                array(
+                    'api_uri'=>'localhost',
+                    'jwt'=>array(
+                        'using'=>true,
+                        'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+                        'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+                    )))
+        );
+
+        $this->assertEquals(
+            file_get_contents(dirname(__FILE__).'/files/php_UAPAY.private'),
+            $this->invokeMethod($stub, 'own_private_key', array(null))
         );
     }
 
@@ -327,8 +358,7 @@ class RequestTest extends TestCase
      * @expectedException UAPAY\Exception\Runtime
      * @expectedExceptionMessage The file with the private key was not find!
      */
-    /*
-    public function test_get_json_with_token_f1()
+    public function test_own_private_key_file_not_find()
     {
         $stub = $this->getMockForAbstractClass(
             'UAPAYTest\RequestWithConstantIAT',
@@ -342,14 +372,31 @@ class RequestTest extends TestCase
                     )))
         );
 
-        $this->invokeMethod($stub, 'get_json', array(null));
-    }*/
+        $this->invokeMethod($stub, 'own_private_key', array(null));
+    }
 
     /**
-     * @expectedException UAPAY\Exception\JSON
-     * @expectedExceptionMessage unable to create JWT token
+     * @expectedException UAPAY\Exception\Runtime
+     * @expectedExceptionMessage The file with the private key was not read!
      */
-    public function test_get_json_with_token_f2()
+    public function test_own_private_key_file_not_read()
+    {
+        $stub = $this->getMockForAbstractClass(
+            'UAPAYTest\RequestWithFalseGetContents',
+            array(
+                array(
+                    'api_uri'=>'localhost',
+                    'jwt'=>array(
+                        'using'=>true,
+                        'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+                        'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+                    )))
+        );
+
+        $this->invokeMethod($stub, 'own_private_key', array(null));
+    }
+
+    public function test_token_encode()
     {
         $stub = $this->getMockForAbstractClass(
             'UAPAYTest\RequestWithConstantIAT',
@@ -358,11 +405,53 @@ class RequestTest extends TestCase
                     'api_uri'=>'localhost',
                     'jwt'=>array(
                         'using'=>true,
-                        'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.pubkey',
+                        'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+                        'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+                    )))
+        );
+
+        $payload = array(
+            'params' => 'value',
+            'iat' => '1234567890',
+            'data' => ''
+        );
+
+        $this->assertEquals(
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJwYXJhbXMiOiJ2YWx1ZSIsImlhdCI6IjEyMzQ1Njc4OTAiLCJkYXRhIjoiIn0.ElJlq-pQzurrEMviRsw6gj8XOGeyw4325UCYpwTw-yVWSLDpd0mn3uUDjNkTKKKZqxZQwT3GrwojMxs62J-RF8gr7goLl_lmRvdvC8kXZ2k8I7mcak8gPoL8wKtX9tx8ir2Dh8arR1jiclaRoiPDnzZXSu2Apc7AbF0iTOmCnTdHNIH9G-MjXYA9Rdb8jUES-9xWe6f-py4cUsTtV3aHdKBe2LIs2ZBZMe7XFygS5Bm6Ws7_sl6tgS7cc4St7NfyYaIlIKPlta7aArPkCkPfG2rcXldyckeFMUS_zfw2QkalO5iVjcqZkh_5frUb2Epnx-TYHrgsCy9b32BWnhRrI7ZuQnC5ESGG0HkN6tQi2f2f_pndhB2PkChixJEKVtxaCU4HPUuMFnhnfdCBBD7Nft_ekYz_ne24JsTy2taqUXpQKxdF_j6FLiFHC889r5_M-tp4oC1-LqtTIB6juySFlftTBVrkoZBcc8iAzr9RvI2JG_dzNuZEom9CDNgNNybnXtoUnauQ9yAJ-iC3i-xdx-0fdDC0jHXMAblpEIdzh4qVXNyeEnJBpXaZOmrloG894pgkASORrPtm1FxcAW5OcFlsFLnpdGLmqcDgV7yjXYTbULedmRGwH9w5PO6O-rgwI9PFyApvrOkhZsRsD2GT4jflr0Dj7ZPRKt8vUbMZseY',
+            $this->invokeMethod($stub, 'token_encode', array($payload))
+        );
+
+    }
+
+    /**
+     * @expectedException UAPAY\Exception\JSON
+     * @expectedExceptionMessage unable to create JWT token
+     */
+    public function test_token_encode_bad_private_key()
+    {
+        $stub = $this->getMockForAbstractClass(
+            'UAPAYTest\RequestWithConstantIAT',
+            array(
+                array(
+                    'api_uri'=>'localhost',
+                    'jwt'=>array(
+                        'using'=>true,
+                        'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
                         'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.bad',
                     )))
         );
 
-        $this->invokeMethod($stub, 'get_json', array(null));
+        $payload = array(
+            'params' => 'value',
+            'iat' => '1234567890',
+            'data' => ''
+        );
+
+        $this->assertEquals(
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJwYXJhbXMiOiJ2YWx1ZSIsImlhdCI6IjEyMzQ1Njc4OTAiLCJkYXRhIjoiIn0.ElJlq-pQzurrEMviRsw6gj8XOGeyw4325UCYpwTw-yVWSLDpd0mn3uUDjNkTKKKZqxZQwT3GrwojMxs62J-RF8gr7goLl_lmRvdvC8kXZ2k8I7mcak8gPoL8wKtX9tx8ir2Dh8arR1jiclaRoiPDnzZXSu2Apc7AbF0iTOmCnTdHNIH9G-MjXYA9Rdb8jUES-9xWe6f-py4cUsTtV3aHdKBe2LIs2ZBZMe7XFygS5Bm6Ws7_sl6tgS7cc4St7NfyYaIlIKPlta7aArPkCkPfG2rcXldyckeFMUS_zfw2QkalO5iVjcqZkh_5frUb2Epnx-TYHrgsCy9b32BWnhRrI7ZuQnC5ESGG0HkN6tQi2f2f_pndhB2PkChixJEKVtxaCU4HPUuMFnhnfdCBBD7Nft_ekYz_ne24JsTy2taqUXpQKxdF_j6FLiFHC889r5_M-tp4oC1-LqtTIB6juySFlftTBVrkoZBcc8iAzr9RvI2JG_dzNuZEom9CDNgNNybnXtoUnauQ9yAJ-iC3i-xdx-0fdDC0jHXMAblpEIdzh4qVXNyeEnJBpXaZOmrloG894pgkASORrPtm1FxcAW5OcFlsFLnpdGLmqcDgV7yjXYTbULedmRGwH9w5PO6O-rgwI9PFyApvrOkhZsRsD2GT4jflr0Dj7ZPRKt8vUbMZseY',
+            $this->invokeMethod($stub, 'token_encode', array($payload))
+        );
+
     }
+
 }
