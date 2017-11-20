@@ -5,64 +5,41 @@ namespace UAPAY;
 use UAPAY\Log as Log;
 use UAPAY\Exception;
 
-class Callback
+class Callback extends Response
 {
     /**
-     *      @var String
-     */
-    protected $json;
-
-    /**
-     *      @var String
+     *      @var string
      */
     protected $id;
 
     /**
-     *      @var String
+     *      @var string
      */
     protected $orderId;
 
     /**
-     *      @var Int
+     *      @var int
      */
     protected $number;
 
     /**
-     *      @var amount
+     *      @var int
      */
     protected $amount;
 
     /**
-     *      @var String
+     *      @var string
      */
     protected $createdAt;
 
     /**
      *      Constructor
      *
-     *      @param array $json_string array of options
+     *      @param array $jwt_options array of options
      */
-    public function __construct()
+    public function __construct($jwt_options=null)
     {
-        $json_string = $this->get_http_raw_post_data();
-
-        $this->json = json_decode($json_string, true);
-        if (json_last_error() != 0)
-        {
-            throw new Exception\Runtime('decoding error of the json callback!');
-        }
-
-        if (isset($this->json['error']))
-        {
-            throw new Exception\JSON('json callback contain an error message!');
-        }
-
-        $this->status = $this->json_value('status');
-        $this->id = $this->json_value('id');
-        $this->orderId = $this->json_value('orderId');
-        $this->number = $this->json_value('number');
-        $this->amount = $this->json_value('amount');
-        $this->createdAt = $this->json_value('createdAt');
+        parent::__construct($this->get_http_raw_post_data(), $jwt_options);
     }
 
     /**
@@ -92,10 +69,40 @@ class Callback
     }
 
     /**
+     *      Handle decoded JSON
+     *
+     *      @throws Exception\JSON
+     */
+    protected function json_handle()
+    {
+        if (isset($this->json['error']))
+        {
+            throw new Exception\JSON('json callback contain an error message!');
+        }
+
+        if ($this->jwt['using'] === true)
+        {
+            if ( ! isset($this->json['token']))
+            {
+                throw new Exception\JSON('json does not contain the token field!');
+            }
+
+            $this->json = $this->token_decode($this->json['token']);
+        }
+
+        $this->status = $this->json_value('status');
+        $this->id = $this->json_value('id');
+        $this->orderId = $this->json_value('orderId');
+        $this->number = $this->json_value('number');
+        $this->amount = $this->json_value('amount');
+        $this->createdAt = $this->json_value('createdAt');
+    }
+
+    /**
      *      Get value from JSON
      *
-     *      @param $name String
-     *      @return String
+     *      @param string $name
+     *      @return mixed
      */
     protected function json_value($name)
     {
@@ -108,19 +115,9 @@ class Callback
     }
 
     /**
-     *      Get status code
-     *
-     *      @return String
-     */
-    public function status()
-    {
-        return $this->status;
-    }
-
-    /**
      *      Get id
      *
-     *      @return String
+     *      @return string
      */
     public function id()
     {
@@ -130,7 +127,7 @@ class Callback
     /**
      *      Get order id
      *
-     *      @return String
+     *      @return string
      */
     public function orderId()
     {
@@ -140,7 +137,7 @@ class Callback
     /**
      *      Get number of paymnet
      *
-     *      @return Int
+     *      @return int
      */
     public function number()
     {
@@ -150,7 +147,7 @@ class Callback
     /**
      *      Get amount
      *
-     *      @return Int
+     *      @return int
      */
     public function amount()
     {
@@ -160,7 +157,7 @@ class Callback
     /**
      *      Get createdAt
      *
-     *      @return String
+     *      @return string
      */
     public function createdAt()
     {
@@ -170,7 +167,7 @@ class Callback
     /**
      *      Get jsons array
      *
-     *      @return Array
+     *      @return array
      */
     public function json()
     {

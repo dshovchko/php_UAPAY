@@ -72,9 +72,14 @@ class CallbackTest extends TestCase
 		return '{"id":"b9291adc-45a4-4ce4-a30a-ed76aa4bb14a","orderId":"c4957592-f23c-419e-bcaf-219d2e145b5a","externalId":"24","number":7952,"paymentNumber":7952,"extarnalId":"24","cardPanMasked":"5351360971","amound":1234,"status":"FINISHED","paymentStatus":"FINISHED","extraInfo":"{}","receiptPath":"/acquiring/receipts/ab20aed7-92ff-4b41-a938-5afe26dc91e1.pdf","createdAt":"1510134928000","createDate":"1510134928000","payDate":"1510135081998"}';
     }
 
+    public function JSON_with_jwt_token()
+	{
+		return '{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpYXQiOjE1MTAzMjY3NzcsImlkIjoiYjkyOTFhZGMtNDVhNC00Y2U0LWEzMGEtZWQ3NmFhNGJiMTRhIiwib3JkZXJJZCI6ImM0OTU3NTkyLWYyM2MtNDE5ZS1iY2FmLTIxOWQyZTE0NWI1YSIsImV4dGVybmFsSWQiOiIyNCIsIm51bWJlciI6Nzk1MiwicGF5bWVudE51bWJlciI6Nzk1MiwiZXh0YXJuYWxJZCI6IjI0IiwiY2FyZFBhbk1hc2tlZCI6IjUzNTEzNjA5NzEiLCJhbW91bnQiOjEyMzQsInN0YXR1cyI6IkZJTklTSEVEIiwicGF5bWVudFN0YXR1cyI6IkZJTklTSEVEIiwiZXh0cmFJbmZvIjoie30iLCJyZWNlaXB0UGF0aCI6IlwvYWNxdWlyaW5nXC9yZWNlaXB0c1wvYWIyMGFlZDctOTJmZi00YjQxLWE5MzgtNWFmZTI2ZGM5MWUxLnBkZiIsImNyZWF0ZWRBdCI6IjE1MTAxMzQ5MjgwMDAiLCJjcmVhdGVEYXRlIjoiMTUxMDEzNDkyODAwMCIsInBheURhdGUiOiIxNTEwMTM1MDgxOTk4In0.RgfS0Mby-CSvwk3pjjZ81Br3vD_kUNf3PINd9SB2-3B_f2s6VnP0V0p5R8MApHse_1YidlAJbNPWi9QIwoLl2MOJArv_YValKKBe9bk3soz9LyTSfEou04dMBScVwg_j5BSECNPacDoNk__6B-51Dj53O8REB8cFBdlr7gjHZ63XM37cgj6-EWI6Yc5gHVhhU0Mf89ZiL0VvCwmAiKiOMPRAxsWYX1K5TdwUXNjETY94nlvO_60XZ03f-2XQLtjJqDEbLvFRWVSVbH421prOP6k6ktZFIPtErMuelRyIJkRuHSEpbfcnN-IwhHJoUjeOn_MnV4XPRTNsBGoimhqpendj8L8n5covGO2ahy9-U86NAKSqdaqgSGrJeJyRggtfSxxai-3mJdrbZ3NmtMsfjXN8hU2vEveVkLP4f47bvuVrWIlUlZVMYROdnrGe43ocXNksVPioAWfNTUYmpKcXbuFNEFk9hEz7rgYzg0ioGQXJbhBwcBRGgAJMnLlsCuxO_PM2JuQTOKCJix3X5fJjrSMLa4iu9rLToyRbp1FisHI0W5CXbvA0vTkXdIANITBF9B-lyJFFB0XLANAljdCMHh94fTFKcU7lhivGxf8_Okxxqmchb3CLlia2Y1iUcPgA-DE9qjbbbPzDj71Ht7sXOAoJ-rUjBDoPio5Xpiffq9M"}';
+    }
+
     /**
      * @expectedException UAPAY\Exception\Runtime
-     * @expectedExceptionMessage decoding error of the json callback!
+     * @expectedExceptionMessage decoding error of the json response!
      */
 	public function test_construct_JSON_bad()
 	{
@@ -258,5 +263,41 @@ class CallbackTest extends TestCase
             array('got: ', 'some raw text',' '),
             \UAPAY\Log::instance()->show_debug_log()
         );
+    }
+
+    /**
+     * @expectedException UAPAY\Exception\JSON
+     * @expectedExceptionMessage json callback contain an error message!
+     */
+    public function test_json_handle_with_error()
+    {
+        file_put_contents('php://input', $this->JSON_error());
+        $c = new Callback();
+    }
+
+    public function test_json_handle_with_jwt()
+    {
+        file_put_contents('php://input', $this->JSON_with_jwt_token());
+        $options = array(
+            'using'=>true,
+            'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+            'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+        );
+        $c = new Callback($options);
+    }
+
+    /**
+     * @expectedException UAPAY\Exception\JSON
+     * @expectedExceptionMessage json does not contain the token field!
+     */
+    public function test_json_handle_with_jwt_without_token()
+    {
+        file_put_contents('php://input', $this->JSON_ok());
+        $options = array(
+            'using'=>true,
+            'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+            'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+        );
+        $c = new Callback($options);
     }
 }
