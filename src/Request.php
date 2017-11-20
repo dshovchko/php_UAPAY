@@ -41,30 +41,8 @@ abstract class Request
             throw new Exception\Data('parameter api_uri is not specified');
         }
 
-        if (isset($options['jwt']))
-        {
-            // using
-            if ( ! isset($options['jwt']['using']))
-            {
-                throw new Exception\Data('parameter jwt/using is not specified');
-            }
-            if ( ! is_bool($options['jwt']['using']))
-            {
-                throw new Exception\Data('parameter jwt/using is incorrect');
-            }
-            // using
-            if ( ! isset($options['jwt']['UAPAY_pubkey']))
-            {
-                throw new Exception\Data('parameter jwt/UAPAY_pubkey is not specified');
-            }
-            // using
-            if ( ! isset($options['jwt']['our_privkey']))
-            {
-                throw new Exception\Data('parameter jwt/our_privkey is not specified');
-            }
-
-            $this->jwt = $options['jwt'];
-        }
+        $jo = new JWTOptions($options);
+        $this->jwt = $jo->get();
 
         // http client
         $this->client = new \GuzzleHttp\Client([

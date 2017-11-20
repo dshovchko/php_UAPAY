@@ -37,9 +37,10 @@ class Callback extends Response
      *
      *      @param array $jwt_options array of options
      */
-    public function __construct($jwt_options=null)
+    public function __construct($options=null)
     {
-        parent::__construct($this->get_http_raw_post_data(), $jwt_options);
+        $jo = new JWTOptions($options);
+        parent::__construct($this->get_http_raw_post_data(), $jo->get());
     }
 
     /**

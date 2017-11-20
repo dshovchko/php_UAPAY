@@ -279,9 +279,12 @@ class CallbackTest extends TestCase
     {
         file_put_contents('php://input', $this->JSON_with_jwt_token());
         $options = array(
-            'using'=>true,
-            'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
-            'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+            'api_uri'=>'localhost',
+            'jwt'=>array(
+                'using'=>true,
+                'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+                'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.bad',
+            )
         );
         $c = new Callback($options);
     }
@@ -294,9 +297,12 @@ class CallbackTest extends TestCase
     {
         file_put_contents('php://input', $this->JSON_ok());
         $options = array(
-            'using'=>true,
-            'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
-            'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+            'api_uri'=>'localhost',
+            'jwt'=>array(
+                'using'=>true,
+                'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+                'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.bad',
+            )
         );
         $c = new Callback($options);
     }
