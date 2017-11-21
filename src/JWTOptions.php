@@ -2,7 +2,6 @@
 
 namespace UAPAY;
 
-use UAPAY\Log as Log;
 use UAPAY\Exception;
 
 class JWTOptions

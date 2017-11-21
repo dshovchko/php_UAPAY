@@ -101,17 +101,6 @@ abstract class Response
     }
 
     /**
-     *      Get file contents
-     *
-     *      @param string $fname
-     *      @return string
-     */
-    protected function file_get_contents($fname)
-    {
-        return file_get_contents($fname);
-    }
-
-    /**
      *      Get UAPAY public key
      *
      *      @throws Exception\Runtime
@@ -119,17 +108,14 @@ abstract class Response
      */
     protected function uapay_public_key()
     {
-        // check public key file
-        if ( ! file_exists($this->jwt['UAPAY_pubkey']))
+        try
         {
-            throw new Exception\Runtime('The file with the public key was not find!');
+            $key = new Key();
+            $public_key = $key->get($this->jwt['UAPAY_pubkey']);
         }
-
-        // load public key file
-        $public_key = $this->file_get_contents($this->jwt['UAPAY_pubkey']);
-        if ($public_key === FALSE)
+        catch (\Exception $e)
         {
-            throw new Exception\Runtime('The file with the public key was not read!');
+            throw new Exception\Runtime('The file with the public key was '.$e->getMessage().'!');
         }
 
         return $public_key;

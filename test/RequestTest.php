@@ -11,13 +11,6 @@ class RequestWithConstantIAT extends \UAPAY\Request
         return 1510326777;
     }
 }
-class RequestWithFalseGetContents extends \UAPAY\Request
-{
-    public function file_get_contents($fname)
-    {
-        return false;
-    }
-}
 
 class RequestTest extends TestCase
 {
@@ -291,7 +284,7 @@ class RequestTest extends TestCase
 
     /**
      * @expectedException UAPAY\Exception\Runtime
-     * @expectedExceptionMessage The file with the private key was not find!
+     * @expectedExceptionMessage The file with the private key was not exists!
      */
     public function test_own_private_key_file_not_find()
     {
@@ -304,27 +297,6 @@ class RequestTest extends TestCase
                         'using'=>true,
                         'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
                         'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.privkey',
-                    )))
-        );
-
-        $this->invokeMethod($stub, 'own_private_key', array(null));
-    }
-
-    /**
-     * @expectedException UAPAY\Exception\Runtime
-     * @expectedExceptionMessage The file with the private key was not read!
-     */
-    public function test_own_private_key_file_not_read()
-    {
-        $stub = $this->getMockForAbstractClass(
-            'UAPAYTest\RequestWithFalseGetContents',
-            array(
-                array(
-                    'api_uri'=>'localhost',
-                    'jwt'=>array(
-                        'using'=>true,
-                        'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
-                        'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
                     )))
         );
 

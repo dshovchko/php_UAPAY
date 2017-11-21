@@ -20,15 +20,6 @@ class ResponseForTesting extends \UAPAY\Response
     }
 }
 
-class ResponseWithFalseGetContents extends ResponseForTesting
-{
-    public function file_get_contents($fname)
-    {
-        return false;
-    }
-}
-
-
 class ResponseTest extends TestCase
 {
     public function test_constructor()
@@ -222,7 +213,7 @@ class ResponseTest extends TestCase
 
     /**
      * @expectedException UAPAY\Exception\Runtime
-     * @expectedExceptionMessage The file with the public key was not find!
+     * @expectedExceptionMessage The file with the public key was not exists!
      */
     public function test_uapay_public_key_not_found()
     {
@@ -232,26 +223,7 @@ class ResponseTest extends TestCase
             'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
         );
         $stub = $this->getMockForAbstractClass(
-            '\UAPAYTest\ResponseWithFalseGetContents',
-            array($options)
-        );
-
-        $this->invokeMethod($stub, 'uapay_public_key', array(null));
-    }
-
-    /**
-     * @expectedException UAPAY\Exception\Runtime
-     * @expectedExceptionMessage The file with the public key was not read!
-     */
-    public function test_uapay_public_key_not_read()
-    {
-        $options = array(
-            'using'=>true,
-            'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
-            'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
-        );
-        $stub = $this->getMockForAbstractClass(
-            '\UAPAYTest\ResponseWithFalseGetContents',
+            '\UAPAYTest\ResponseForTesting',
             array($options)
         );
 

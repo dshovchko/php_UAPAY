@@ -151,17 +151,6 @@ abstract class Request
     }
 
     /**
-     *      Get file contents
-     *
-     *      @param string $fname
-     *      @return string
-     */
-    protected function file_get_contents($fname)
-    {
-        return file_get_contents($fname);
-    }
-
-    /**
      *      Get private key for encode payload
      *
      *      @throws Exception\Runtime
@@ -169,17 +158,14 @@ abstract class Request
      */
     protected function own_private_key()
     {
-        // check private key file
-        if ( ! file_exists($this->jwt['our_privkey']))
+        try
         {
-            throw new Exception\Runtime('The file with the private key was not find!');
+            $key = new Key();
+            $private_key = $key->get($this->jwt['our_privkey']);
         }
-
-        // load private key file
-        $private_key = $this->file_get_contents($this->jwt['our_privkey']);
-        if ($private_key === FALSE)
+        catch (\Exception $e)
         {
-            throw new Exception\Runtime('The file with the private key was not read!');
+            throw new Exception\Runtime('The file with the private key was '.$e->getMessage().'!');
         }
 
         return $private_key;
