@@ -103,22 +103,11 @@ abstract class Response
     /**
      *      Get UAPAY public key
      *
-     *      @throws Exception\Runtime
      *      @return string Public key
      */
     protected function uapay_public_key()
     {
-        try
-        {
-            $key = new Key();
-            $public_key = $key->get($this->jwt['UAPAY_pubkey']);
-        }
-        catch (\Exception $e)
-        {
-            throw new Exception\Runtime('The file with the public key was '.$e->getMessage().'!');
-        }
-
-        return $public_key;
+        return (new Key())->get($this->jwt['UAPAY_pubkey'], 'public');
     }
 
     /**

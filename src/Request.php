@@ -153,22 +153,11 @@ abstract class Request
     /**
      *      Get private key for encode payload
      *
-     *      @throws Exception\Runtime
      *      @return string
      */
     protected function own_private_key()
     {
-        try
-        {
-            $key = new Key();
-            $private_key = $key->get($this->jwt['our_privkey']);
-        }
-        catch (\Exception $e)
-        {
-            throw new Exception\Runtime('The file with the private key was '.$e->getMessage().'!');
-        }
-
-        return $private_key;
+        return (new Key())->get($this->jwt['our_privkey'], 'private');
     }
 
     /**

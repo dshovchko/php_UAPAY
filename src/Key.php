@@ -11,13 +11,24 @@ class Key
     /**
      *      Get content of key file
      *      @param string $fname
+     *      @param string $type
      *      @return string
+     *      @throws Exception\Runtime
      */
-    public function get($fname)
+    public function get($fname, $type)
     {
-        $this->check_exists($fname);
+        try
+        {
+            $this->check_exists($fname);
 
-        return $this->load($fname);
+            $key = $this->load($fname);
+        }
+        catch (\Exception $e)
+        {
+            throw new Exception\Runtime('The file with the '.$type.' key was '.$e->getMessage().'!');
+        }
+
+        return $key;
     }
 
     /**

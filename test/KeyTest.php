@@ -12,8 +12,18 @@ class KeyTest extends TestCase
         $k = new Key();
         $this->assertEquals(
             file_get_contents(dirname(__FILE__).'/files/php_UAPAY.private'),
-            $k->get(dirname(__FILE__).'/files/php_UAPAY.private')
+            $k->get(dirname(__FILE__).'/files/php_UAPAY.private', 'private')
         );
+    }
+
+    /**
+     * @expectedException UAPAY\Exception\Runtime
+     * @expectedExceptionMessage not exists
+     */
+    public function test_get_notexists()
+    {
+        $k = new Key();
+        $k->get(dirname(__FILE__).'/files/php_UAPAY.privkey', 'private');
     }
 
     public function test_check_exists()
