@@ -9,7 +9,7 @@ class Runtime extends General implements EInterface
      *      Constructor
      *
      *      @param string $message
-     *      @param Throwable $previous
+     *      @param \Throwable $previous
      */
     public function __construct($message, \Exception $previous = null)
     {
