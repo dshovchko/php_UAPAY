@@ -113,7 +113,7 @@ abstract class Request
     /**
      *      Returns iat param
      *
-     *      @return array
+     *      @return integer
      */
     public function get_param_iat()
     {
