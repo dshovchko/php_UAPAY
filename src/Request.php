@@ -206,7 +206,7 @@ abstract class Request
             Log::instance()->debug('got response:'.PHP_EOL.$body);
             $response = new $this->response_class($body, $this->jwt);
         }
-        catch (\GuzzleHttp\Exception\TransferException $e)
+        catch (\GuzzleHttp\Exception\RequestException $e)
         {
             Log::instance()->debug('request:'.PHP_EOL.\GuzzleHttp\Psr7\str($e->getRequest()));
             if ($e->hasResponse()) {
