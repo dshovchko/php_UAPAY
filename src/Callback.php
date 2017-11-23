@@ -76,10 +76,7 @@ class Callback extends Response
      */
     protected function json_handle()
     {
-        if (isset($this->json['error']))
-        {
-            throw new Exception\JSON('json callback contain an error message!');
-        }
+        $this->check_if_error();
 
         if ($this->jwt['using'] === true)
         {

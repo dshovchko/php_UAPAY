@@ -88,7 +88,7 @@ class ResponseTest extends TestCase
 
     /**
      * @expectedException UAPAY\Exception\JSON
-     * @expectedExceptionMessage json response contain an error message!
+     * @expectedExceptionMessage json contain an error message!
      */
     public function test_json_handle_contain_error()
     {

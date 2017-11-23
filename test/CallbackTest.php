@@ -89,7 +89,7 @@ class CallbackTest extends TestCase
 
     /**
      * @expectedException UAPAY\Exception\JSON
-     * @expectedExceptionMessage json callback contain an error message!
+     * @expectedExceptionMessage json contain an error message!
      */
     public function test_construct_JSON_error()
     {
@@ -267,7 +267,7 @@ class CallbackTest extends TestCase
 
     /**
      * @expectedException UAPAY\Exception\JSON
-     * @expectedExceptionMessage json callback contain an error message!
+     * @expectedExceptionMessage json contain an error message!
      */
     public function test_json_handle_with_error()
     {

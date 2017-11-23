@@ -70,24 +70,10 @@ abstract class Response
      */
     protected function json_handle()
     {
-        if (isset($this->json['error']))
-        {
-            throw new Exception\JSON('json response contain an error message!');
-        }
-        if ( ! isset($this->json['status']))
-        {
-            throw new Exception\JSON('invalid json response!');
-        }
-        if ($this->json['status'] == 0)
-        {
-            throw new Exception\JSON('json response contain an error status!');
-        }
-        $this->status = $this->json['status'];
+        $this->check_if_error();
+        $this->get_status();
 
-        if ( ! isset($this->json['data']) || !is_array($this->json['data']))
-        {
-            throw new Exception\JSON('json does not contain the data field!');
-        }
+        $this->check_if_data();
 
         if ($this->jwt['using'] === true)
         {
@@ -97,6 +83,50 @@ abstract class Response
             }
 
             $this->json['data'] = $this->token_decode($this->json['data']['token']);
+        }
+    }
+
+    /**
+     *      Check if there is an error in JSON
+     *
+     *      @throws Exception\JSON
+     */
+    protected function check_if_error()
+    {
+        if (isset($this->json['error']))
+        {
+            throw new Exception\JSON('json contain an error message!');
+        }
+    }
+
+    /**
+     *      Сheck if present status and take value
+     *
+     *      @throws Exception\JSON
+     */
+    protected function get_status()
+    {
+        if ( ! isset($this->json['status']))
+        {
+            throw new Exception\JSON('invalid json response!');
+        }
+        if ($this->json['status'] == 0)
+        {
+            throw new Exception\JSON('json response contain an error status!');
+        }
+        $this->status = $this->json['status'];
+    }
+
+    /**
+     *      Check if there is a data in JSON
+     *
+     *      @throws Exception\JSON
+     */
+    protected function check_if_data()
+    {
+        if ( ! isset($this->json['data']) || !is_array($this->json['data']))
+        {
+            throw new Exception\JSON('json does not contain the data field!');
         }
     }
 
