@@ -54,6 +54,58 @@ class JWTOptionsTest extends TestCase
         $jo = new JWTOptions(array('api_uri'=>'localhost', 'jwt'=>array('using'=>true, 'UAPAY_pubkey'=>'')));
     }
 
+    public function test_is_valid_using()
+    {
+        $options = array(
+            'api_uri'=>'localhost',
+            'jwt'=>array('using'=>true, 'UAPAY_pubkey'=>'public', 'our_privkey'=>'private')
+        );
+        $jo = new JWTOptions($options);
+        $payload = $this->invokeMethod($jo, 'is_valid_using', array($options));
+    }
+
+    /**
+     * @expectedException UAPAY\Exception\Data
+     * @expectedExceptionMessage parameter jwt/using is incorrect
+     */
+    public function test_is_valid_using_bad_type()
+    {
+        $options = array(
+            'api_uri'=>'localhost',
+            'jwt'=>array('using'=>true, 'UAPAY_pubkey'=>'public', 'our_privkey'=>'private')
+        );
+        $jo = new JWTOptions($options);
+
+        $options['jwt']['using'] = 1234;
+        $payload = $this->invokeMethod($jo, 'is_valid_using', array($options));
+    }
+
+    public function test_is_present_option()
+    {
+        $options = array(
+            'api_uri'=>'localhost',
+            'jwt'=>array('using'=>true, 'UAPAY_pubkey'=>'public', 'our_privkey'=>'private')
+        );
+        $jo = new JWTOptions($options);
+        $payload = $this->invokeMethod($jo, 'is_present_option', array($options, 'our_privkey'));
+    }
+
+    /**
+     * @expectedException UAPAY\Exception\Data
+     * @expectedExceptionMessage parameter jwt/our_privkey is not specified
+     */
+    public function test_is_present_option_not_present()
+    {
+        $options = array(
+            'api_uri'=>'localhost',
+            'jwt'=>array('using'=>true, 'UAPAY_pubkey'=>'public', 'our_privkey'=>'private')
+        );
+        $jo = new JWTOptions($options);
+
+        unset($options['jwt']['our_privkey']);
+        $payload = $this->invokeMethod($jo, 'is_present_option', array($options, 'our_privkey'));
+    }
+
     public function test_get()
     {
         $jo = new JWTOptions(array(
