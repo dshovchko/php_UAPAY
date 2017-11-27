@@ -187,7 +187,6 @@ abstract class Request
     /**
      *      Send request to UAPAY
      *
-     *      @throws Exception\Transfer
      *      @return object Response
      */
     public function send()
@@ -204,18 +203,27 @@ abstract class Request
             ]);
             $body = $httpresponse->getBody()->getContents();
             Log::instance()->debug('got response:'.PHP_EOL.$body);
-            $response = new $this->response_class($body, $this->jwt);
+            return new $this->response_class($body, $this->jwt);
         }
         catch (\GuzzleHttp\Exception\RequestException $e)
         {
-            Log::instance()->debug('request:'.PHP_EOL.\GuzzleHttp\Psr7\str($e->getRequest()));
-            if ($e->hasResponse()) {
-                Log::instance()->debug('response:'.PHP_EOL.\GuzzleHttp\Psr7\str($e->getResponse()));
-            }
+            $this->handle_request_exception($e);
+        }
+    }
 
-            throw new Exception\Transfer('an error occured during a transfer');
+    /**
+     *      Handle request exception
+     *
+     *      @param \GuzzleHttp\Exception\RequestException $e
+     *      @throws Exception\Transfer
+     */
+    protected function handle_request_exception($e)
+    {
+        Log::instance()->debug('request:'.PHP_EOL.\GuzzleHttp\Psr7\str($e->getRequest()));
+        if ($e->hasResponse()) {
+            Log::instance()->debug('response:'.PHP_EOL.\GuzzleHttp\Psr7\str($e->getResponse()));
         }
 
-        return $response;
+        throw new Exception\Transfer('an error occured during a transfer');
     }
 }
