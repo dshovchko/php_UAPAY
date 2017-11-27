@@ -127,6 +127,27 @@ abstract class Request
      */
     public function get_json()
     {
+        $payload = $this->create_payload();
+
+        if ($this->jwt['using'] === true)
+        {
+            $payload = $this->alter_payload_for_jwt($payload);
+        }
+        $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+        Log::instance()->debug('build JSON:');
+        Log::instance()->debug($json);
+
+        return $json;
+    }
+
+    /**
+     *      Create payload array
+     *
+     *      @return array
+     */
+    protected function create_payload()
+    {
         $ar = array(
             'params' => $this->get_params()
         );
@@ -134,20 +155,24 @@ abstract class Request
         {
             $ar['data'] = $this->data;
         }
-        if ($this->jwt['using'] === true)
-        {
-            $payload = $ar;
-            $payload['iat'] = $this->get_param_iat();
-            $ar['token'] = $this->token_encode($payload);
 
-            if (isset($ar['data'])) unset($ar['data']);
-        }
-        $json = json_encode($ar, JSON_UNESCAPED_SLASHES);
+        return $ar;
+    }
 
-        Log::instance()->debug('build JSON:');
-        Log::instance()->debug($json);
+    /**
+     *      Alter payload array with JWT-token
+     *
+     *      @param array $payload
+     *      @return array
+     */
+    protected function alter_payload_for_jwt($payload)
+    {
+        $payload['iat'] = $this->get_param_iat();
 
-        return $json;
+        return array(
+            'params' => $payload['params'],
+            'token' => $this->token_encode($payload)
+        );
     }
 
     /**

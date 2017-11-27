@@ -262,6 +262,86 @@ class RequestTest extends TestCase
         );
     }
 
+    public function test_create_payload()
+    {
+        $stub = $this->getMockForAbstractClass(
+            '\UAPAY\Request',
+            array(array('api_uri'=>'localhost'))
+        );
+
+        $data = array(
+            'test' => 'value',
+            'attribute' => 'at_value',
+        );
+
+        $stub->data($data);
+
+        $this->assertEquals(
+            array(
+                'params' => array(),
+                'data' => $data,
+            ),
+            $this->invokeMethod($stub, 'create_payload', array(null))
+        );
+    }
+
+    public function test_alter_payload_for_jwt()
+    {
+        $stub = $this->getMockForAbstractClass(
+            'UAPAYTest\RequestWithConstantIAT',
+            array(
+                array(
+                    'api_uri'=>'localhost',
+                    'jwt'=>array(
+                        'using'=>true,
+                        'UAPAY_pubkey'=>dirname(__FILE__).'/files/php_UAPAY.public',
+                        'our_privkey'=>dirname(__FILE__).'/files/php_UAPAY.private',
+                    )))
+        );
+
+        $data = array(
+            'test' => 'value',
+        );
+
+        $stub->data($data);
+        $payload = $this->invokeMethod($stub, 'create_payload', array(null));
+
+        $this->assertEquals(
+            array(
+                'params' => array(),
+                'token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJwYXJhbXMiOltdLCJkYXRhIjp7InRlc3QiOiJ2YWx1ZSJ9LCJpYXQiOjE1MTAzMjY3Nzd9.fF8wEqCNmI7c5DZQ1hUkilBU5Ddd4gFVXyap6ZAMnYU7fSMWlimTYTQdFFOHJq6VXFrO5XoFGUjrOPsMs5zeDMSIZtSsPdiwFUP3JEtivTFPIJEWpQ0CcnUrehvwsHRpcd3qYWpXsfLXSdo9Oi0DYw04q157PDbEENuLaUTMHH_HbH_BD-OyLlmnSZeDyoJkYDVqepH7hmuEaLBqnpw3FUGUyH1hp88Onx2BMwNjXQrzOzHaj713S3pXiSPAyaMDyRanUYR_ugK0rtsCMCzIb1naCNDtMWVXXCRY1LSjKQ4bx7c6Z3mfa_z7v-559Zq9ePV5YtfcCzJewyPGAEMIRItV5fw2Iu2HK1YepudXr2tl0PjqrQOGvFQyzzgxr0OHd-4GfJk9Ddpad2m7WbFuhTx4vhKhPCJ7Mi1LGtCjvYDnlK_DiAg6FRU7ysNDofqdxGrJRk2IKSYc4fTo8PMdrYxvYwt6FWOXHTziuOpvQU9PkREy_x7IoVyE5lnmBhFinDdaQ9hrgEiqQhDCrVE98aYSgiRePcJVl81wMvulFHf5xN3BSOuEcZ_XvxU8-mCy2SuS0EQP5wAfV4lPlQy7UDIGtP3JQ7-bByfYJAVApsH7nksO6h93YRSmvtvjHGpnxOEulJ33fAJAQ6gAmJxAmdTmlJ5T3GXwH6bEuKtXRsY',
+            ),
+            $this->invokeMethod($stub, 'alter_payload_for_jwt', array($payload))
+        );
+    }
+
+    /**
+     * @expectedException UAPAY\Exception\JSON
+     * @expectedExceptionMessage unable to create JWT token
+     */
+    public function test_alter_payload_for_jwt_without_JWT_params()
+    {
+        $stub = $this->getMockForAbstractClass(
+            '\UAPAY\Request',
+            array(array('api_uri'=>'localhost'))
+        );
+
+        $data = array(
+            'test' => 'value',
+        );
+
+        $stub->data($data);
+        $payload = $this->invokeMethod($stub, 'create_payload', array(null));
+
+        $this->assertEquals(
+            array(
+                'params' => array(),
+                'token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJwYXJhbXMiOltdLCJkYXRhIjp7InRlc3QiOiJ2YWx1ZSJ9LCJpYXQiOjE1MTAzMjY3Nzd9.fF8wEqCNmI7c5DZQ1hUkilBU5Ddd4gFVXyap6ZAMnYU7fSMWlimTYTQdFFOHJq6VXFrO5XoFGUjrOPsMs5zeDMSIZtSsPdiwFUP3JEtivTFPIJEWpQ0CcnUrehvwsHRpcd3qYWpXsfLXSdo9Oi0DYw04q157PDbEENuLaUTMHH_HbH_BD-OyLlmnSZeDyoJkYDVqepH7hmuEaLBqnpw3FUGUyH1hp88Onx2BMwNjXQrzOzHaj713S3pXiSPAyaMDyRanUYR_ugK0rtsCMCzIb1naCNDtMWVXXCRY1LSjKQ4bx7c6Z3mfa_z7v-559Zq9ePV5YtfcCzJewyPGAEMIRItV5fw2Iu2HK1YepudXr2tl0PjqrQOGvFQyzzgxr0OHd-4GfJk9Ddpad2m7WbFuhTx4vhKhPCJ7Mi1LGtCjvYDnlK_DiAg6FRU7ysNDofqdxGrJRk2IKSYc4fTo8PMdrYxvYwt6FWOXHTziuOpvQU9PkREy_x7IoVyE5lnmBhFinDdaQ9hrgEiqQhDCrVE98aYSgiRePcJVl81wMvulFHf5xN3BSOuEcZ_XvxU8-mCy2SuS0EQP5wAfV4lPlQy7UDIGtP3JQ7-bByfYJAVApsH7nksO6h93YRSmvtvjHGpnxOEulJ33fAJAQ6gAmJxAmdTmlJ5T3GXwH6bEuKtXRsY',
+            ),
+            $this->invokeMethod($stub, 'alter_payload_for_jwt', array($payload))
+        );
+    }
+
     public function test_own_private_key()
     {
         $stub = $this->getMockForAbstractClass(
