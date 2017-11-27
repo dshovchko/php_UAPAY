@@ -125,4 +125,21 @@ class RequestSendTest extends TestCase
 
         $ret = $r->send();
     }
+
+    /**
+     * @expectedException UAPAY\Exception\Transfer
+     * @expectedExceptionMessage an error occured during a transfer
+     */
+    public function test_handle_request_exception()
+    {
+        $api_path = 'localhost';
+        $stub = $this->getMockForAbstractClass(
+            '\UAPAY\Request',
+            array(array('api_uri'=>$api_path))
+        );
+
+        $e = new RequestException("Error Communicating with Server", new Request('POST', $api_path));
+
+        $this->invokeMethod($stub, 'handle_request_exception', array($e));
+    }
 }
