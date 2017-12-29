@@ -17,7 +17,7 @@
     },
     "require": {
         "php": ">=5.5.27",
-        "dshovchko/debulog": "*",
+        "dshovchko/debulog": "^1.1",
         "guzzlehttp/guzzle": "~6.0",
         "firebase/php-jwt": "^5.0"
     },
