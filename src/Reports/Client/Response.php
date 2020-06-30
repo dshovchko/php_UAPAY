@@ -1,6 +1,6 @@
 <?php
 
-namespace UAPAY\Orders\Create;
+namespace UAPAY\Reports\Client;
 
 use UAPAY\Log as Log;
 use UAPAY\Exception;
