@@ -8,5 +8,10 @@ filter:
         - test/*
         - vendor/*
 
+build:
+    environment:
+        php:
+            version: 7.2
+
 before_commands:
   - composer install --prefer-source
