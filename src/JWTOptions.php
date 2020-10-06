@@ -14,6 +14,7 @@ class JWTOptions
         'UAPAY_pubkey'  => '',
         'our_privkey'   => '',
         'key_type'      => '',
+        'algorithm'     => '',
     );
 
     /**
@@ -29,6 +30,7 @@ class JWTOptions
             $this->is_valid_using($options);
             $this->is_present_option($options, 'UAPAY_pubkey');
             $this->is_present_option($options, 'our_privkey');
+            $this->is_present_option($options, 'algorithm');
 
             $this->jwt = $options['jwt'];
         }

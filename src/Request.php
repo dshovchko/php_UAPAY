@@ -21,6 +21,7 @@ abstract class Request
         'UAPAY_pubkey'  => '',
         'our_privkey'   => '',
         'key_type'      => '',
+        'algorithm'     => '',
     );
 
     /**

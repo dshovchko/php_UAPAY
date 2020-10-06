@@ -43,6 +43,7 @@ return array(
 	'UAPAY_pubkey'	=> 'uapay.pub',
 	'our_privkey'	=> 'private.pem',
 	'key_type'	=> Key::KEYS_IN_FILES,
+	'algorithm'	=> 'RS512',
     ),
 );
 
@@ -55,6 +56,7 @@ return array(
 	'UAPAY_pubkey'	=> 'AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTBWD ...',
 	'our_privkey'	=> 'BlWXFCR+HAo3FXRitBqxiX1nKhXpHAZsMciLq8V6RjsNAQwdsdMFvSl ...',
 	'key_type'	=> Key::KEYS_IN_VALUES,
+	'algorithm'	=> 'HS256',
     ),
 );
 ```
