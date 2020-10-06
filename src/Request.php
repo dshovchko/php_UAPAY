@@ -200,7 +200,7 @@ abstract class Request
         Log::instance()->debug(print_r($payload, true));
         try
         {
-            $token = JWT::encode($payload, $this->own_private_key(), 'RS512');
+            $token = JWT::encode($payload, $this->own_private_key(), $this->jwt['algorithm']);
         }
         catch (\Exception $e)
         {

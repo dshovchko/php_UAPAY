@@ -153,7 +153,7 @@ abstract class Response
     {
         try
         {
-            $decoded = (array) JWT::decode($token, $this->uapay_public_key(), array('RS512'));
+            $decoded = (array) JWT::decode($token, $this->uapay_public_key(), array($this->jwt['algorithm']));
         }
         catch (\Exception $e)
         {
