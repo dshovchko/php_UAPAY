@@ -6,7 +6,14 @@ use UAPAY\Exception;
 
 class Key
 {
-    public function __construct() {}
+    const KEYS_IN_FILES = 'files';
+    const KEYS_IN_VALUES = 'values';
+
+    private $type;
+
+    public function __construct($type = null) {
+        $this->type = empty($type) ? self::KEYS_IN_FILES : $type;
+    }
 
     /**
      *      Get content of key file
@@ -17,6 +24,10 @@ class Key
      */
     public function get($fname, $type)
     {
+        if ($this->type === self::KEYS_IN_VALUES) {
+            return $fname;
+        }
+
         try
         {
             $this->check_exists($fname);

@@ -34,14 +34,27 @@ composer require dshovchko/php_uapay
 ```
 <?php
 
+// Для указания путей к файлам ключей
 return array(
-
     'clientId'		=> '1234',
     'api_uri'		=> 'https://api.demo.uapay.ua',
     'jwt'		=> array(
 	'using'		=> true,
 	'UAPAY_pubkey'	=> 'uapay.pub',
 	'our_privkey'	=> 'private.pem',
+	'key_type'	=> Key::KEYS_IN_FILES,
+    ),
+);
+
+// Для укзания значений ключей
+return array(
+    'clientId'		=> '1234',
+    'api_uri'		=> 'https://api.demo.uapay.ua',
+    'jwt'		=> array(
+	'using'		=> true,
+	'UAPAY_pubkey'	=> 'AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTBWD ...',
+	'our_privkey'	=> 'BlWXFCR+HAo3FXRitBqxiX1nKhXpHAZsMciLq8V6RjsNAQwdsdMFvSl ...',
+	'key_type'	=> Key::KEYS_IN_VALUES,
     ),
 );
 ```

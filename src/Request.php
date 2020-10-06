@@ -20,6 +20,7 @@ abstract class Request
         'using'         => false,
         'UAPAY_pubkey'  => '',
         'our_privkey'   => '',
+        'key_type'      => '',
     );
 
     /**
@@ -182,7 +183,7 @@ abstract class Request
      */
     protected function own_private_key()
     {
-        return (new Key())->get($this->jwt['our_privkey'], 'private');
+        return (new Key($this->jwt['key_type']))->get($this->jwt['our_privkey'], 'private');
     }
 
     /**

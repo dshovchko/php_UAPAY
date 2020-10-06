@@ -13,6 +13,7 @@ class JWTOptions
         'using'         => false,
         'UAPAY_pubkey'  => '',
         'our_privkey'   => '',
+        'key_type'      => '',
     );
 
     /**

@@ -20,6 +20,7 @@ abstract class Response
         'using'         => false,
         'UAPAY_pubkey'  => '',
         'our_privkey'   => '',
+        'key_type'      => '',
     );
 
     /**
@@ -137,7 +138,7 @@ abstract class Response
      */
     protected function uapay_public_key()
     {
-        return (new Key())->get($this->jwt['UAPAY_pubkey'], 'public');
+        return (new Key($this->jwt['key_type']))->get($this->jwt['UAPAY_pubkey'], 'public');
     }
 
     /**
