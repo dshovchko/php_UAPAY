@@ -30,7 +30,13 @@ class JWTOptions
             $this->is_valid_using($options);
             $this->is_present_option($options, 'UAPAY_pubkey');
             $this->is_present_option($options, 'our_privkey');
-            $this->is_present_option($options, 'algorithm');
+
+            // todo replace with:
+            //      $this->is_present_option($options, 'algorithm');
+            //      in next major version
+            if (empty($options['jwt']['algorithm'])) {
+                $options['jwt']['algorithm'] = 'RS512';
+            }
 
             $this->jwt = $options['jwt'];
         }
