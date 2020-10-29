@@ -37,6 +37,9 @@ class JWTOptions
             if (empty($options['jwt']['algorithm'])) {
                 $options['jwt']['algorithm'] = 'RS512';
             }
+            if (empty($options['jwt']['key_type'])) {
+                $options['jwt']['key_type'] = Key::KEYS_IN_FILES;
+            }
 
             $this->jwt = $options['jwt'];
         }
