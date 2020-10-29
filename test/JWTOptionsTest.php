@@ -2,6 +2,7 @@
 
 namespace UAPAYTest;
 
+use UAPAY\Key;
 use \UAPAYTest\TestCase;
 use \UAPAY\JWTOptions as JWTOptions;
 
@@ -113,7 +114,7 @@ class JWTOptionsTest extends TestCase
             'jwt'=>array('using'=>true, 'UAPAY_pubkey'=>'public', 'our_privkey'=>'private')
         ));
         $this->assertEquals(
-			array('using'=>true, 'UAPAY_pubkey'=>'public', 'our_privkey'=>'private'),
+			array('using'=>true, 'UAPAY_pubkey'=>'public', 'our_privkey'=>'private', 'algorithm' => 'RS512', 'key_type' => Key::KEYS_IN_FILES),
 			$jo->get()
 		);
     }
@@ -125,7 +126,7 @@ class JWTOptionsTest extends TestCase
 
         ));
         $this->assertEquals(
-			array('using'=>false, 'UAPAY_pubkey'=>'', 'our_privkey'=>''),
+			array('using'=>false, 'UAPAY_pubkey'=>'', 'our_privkey'=>'', 'key_type'=>'', 'algorithm'=>''),
 			$jo->get()
 		);
     }
