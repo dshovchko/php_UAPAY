@@ -13,6 +13,8 @@ class JWTOptions
         'using'         => false,
         'UAPAY_pubkey'  => '',
         'our_privkey'   => '',
+        'key_type'      => '',
+        'algorithm'     => '',
     );
 
     /**
@@ -28,6 +30,16 @@ class JWTOptions
             $this->is_valid_using($options);
             $this->is_present_option($options, 'UAPAY_pubkey');
             $this->is_present_option($options, 'our_privkey');
+
+            // todo replace with:
+            //      $this->is_present_option($options, 'algorithm');
+            //      in next major version
+            if (empty($options['jwt']['algorithm'])) {
+                $options['jwt']['algorithm'] = 'RS512';
+            }
+            if (empty($options['jwt']['key_type'])) {
+                $options['jwt']['key_type'] = Key::KEYS_IN_FILES;
+            }
 
             $this->jwt = $options['jwt'];
         }

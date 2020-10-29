@@ -20,6 +20,8 @@ abstract class Request
         'using'         => false,
         'UAPAY_pubkey'  => '',
         'our_privkey'   => '',
+        'key_type'      => '',
+        'algorithm'     => '',
     );
 
     /**
@@ -182,7 +184,7 @@ abstract class Request
      */
     protected function own_private_key()
     {
-        return (new Key())->get($this->jwt['our_privkey'], 'private');
+        return (new Key($this->jwt['key_type']))->get($this->jwt['our_privkey'], 'private');
     }
 
     /**
@@ -198,7 +200,7 @@ abstract class Request
         Log::instance()->debug(print_r($payload, true));
         try
         {
-            $token = JWT::encode($payload, $this->own_private_key(), 'RS512');
+            $token = JWT::encode($payload, $this->own_private_key(), $this->jwt['algorithm']);
         }
         catch (\Exception $e)
         {
