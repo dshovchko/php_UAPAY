@@ -34,30 +34,30 @@ composer require dshovchko/php_uapay
 ```
 <?php
 
-// Для указания путей к файлам ключей
+// Для визначення шляхів до файлів ключів
 return array(
     'clientId'		=> '1234',
     'api_uri'		=> 'https://api.demo.uapay.ua',
     'jwt'		=> array(
-	'using'		=> true,
-	'UAPAY_pubkey'	=> 'uapay.pub',
-	'our_privkey'	=> 'private.pem',
-	'key_type'	=> Key::KEYS_IN_FILES,
-	'algorithm'	=> 'RS512',
-    ),
+        'using'		=> true,
+        'UAPAY_pubkey'	=> 'uapay.pub',
+        'our_privkey'	=> 'private.pem',
+        'key_type'	=> Key::KEYS_IN_FILES,
+        'algorithm'	=> 'RS512'
+    )
 );
 
-// Для укзания значений ключей
+// Для завдання значень ключів
 return array(
     'clientId'		=> '1234',
     'api_uri'		=> 'https://api.demo.uapay.ua',
     'jwt'		=> array(
-	'using'		=> true,
-	'UAPAY_pubkey'	=> 'AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTBWD ...',
-	'our_privkey'	=> 'BlWXFCR+HAo3FXRitBqxiX1nKhXpHAZsMciLq8V6RjsNAQwdsdMFvSl ...',
-	'key_type'	=> Key::KEYS_IN_VALUES,
-	'algorithm'	=> 'HS256',
-    ),
+        'using'		=> true,
+        'UAPAY_pubkey'	=> 'AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTBWD ...',
+        'our_privkey'	=> 'BlWXFCR+HAo3FXRitBqxiX1nKhXpHAZsMciLq8V6RjsNAQwdsdMFvSl ...',
+        'key_type'	=> Key::KEYS_IN_VALUES,
+        'algorithm'	=> 'HS256',
+    )
 );
 ```
 
@@ -68,9 +68,9 @@ return array(
 namespace UAPAY;
 
 Log::set(new Logger(
-        realpath('каталог з логами'.DIRECTORY_SEPARATOR,	// log path
-        'uapay',	// prefix for log files (default 'my')
-        true		// enable/disable debug (default false)
+    realpath('каталог з логами'.DIRECTORY_SEPARATOR,	// log path
+    'uapay',	// prefix for log files (default 'my')
+    true		// enable/disable debug (default false)
 ));
 ```
 
